@@ -2,10 +2,12 @@
 #This script takes a .csv output of Projects that need to be closed and closes them.
 #Many thanks to Paul Jackson, Barry Mullan and Dave Thomas for their guidance and knowledge.
 #It's elegant enough for a first ruby script... unsupported, Shannon Mason
-require 'rubygems'
+#require 'rubygems'
+
 require 'rally_api'
 require 'json'
 require 'csv'
+
 class CloseProjects
   def initialize
     headers = RallyAPI::CustomHttpHeader.new()
@@ -15,10 +17,12 @@ class CloseProjects
 
 
     config = {:base_url => "https://rally1.rallydev.com/slm"}
-    config[:username] = "YourEmailAddress@company.com"
-    config[:password] = "YourPassword"
-    #config[:api_key] = "API KEY HERE"
-    config[:workspace] = "Workspace Name"
+    # If you want to use UserName/Password, uncomment the following 2 lines, but comment out the api_key line
+	#config[:username] = "YourEmailAddress@company.com"
+	#config[:password] = "YourPassword"
+	config[:api_key] = "API KEY HERE"
+    
+	config[:workspace] = "Workspace Name"
     config[:project] = "Project Name"
     config[:headers] = headers
 
