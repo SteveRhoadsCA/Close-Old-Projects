@@ -18,13 +18,13 @@ class CloseProjects
 
     config = {:base_url => "https://rally1.rallydev.com/slm"}
     # If you want to use UserName/Password, uncomment the following 2 lines, but comment out the api_key line
-	#config[:username] = "YourEmailAddress@company.com"
-	#config[:password] = "YourPassword"
-	config[:api_key] = "API KEY HERE"
+	#config[:username] 	= "YourEmailAddress@company.com"
+	#config[:password] 	= "YourPassword"
+	config[:api_key] 	= "yourApiKeyHere"
     
-	config[:workspace] = "Workspace Name"
-    config[:project] = "Project Name"
-    config[:headers] = headers
+	config[:workspace] 	= "YourWorkspaceHere"
+    #config[:project]  	= "Project Name"
+    config[:headers] 	= headers
 
     @rally = RallyAPI::RallyRestJson.new(config)
 
@@ -45,32 +45,27 @@ class CloseProjects
 
   end
 
-  #unsure whether I would need to do this following:
-  def parse_csv
-    CSV.parse(File.read("DeleteMe.csv")) do |row|
-      puts row.class
+  # Process each row in the "close projects" file
+  def parse_csv(filename)
+    CSV.foreach(filename, headers:true) do |row|
       #project = @rally.find(RallyAPI::RallyQuery.new({:type => :project, :query_string => "(Name = #{row["Name"]})"}))
-      project = @rally.find(RallyAPI::RallyQuery.new({:type => :project, :query_string => "(Name = \"#{row.first}\")"}))
-      puts project
-      project = project.first
-      fields = {}
-      fields[:state] = 'Closed'
-      fields[:notes] = close_reason(project)
-      project.update(fields)
+      #project = @rally.find(RallyAPI::RallyQuery.new({:type => :project, :query_string => "(Name = \"#{row.first}\")"}))
+      puts "#{row['ProjectOID']},#{row['Owner']},#{close_reason(row['Project'])}"
+      #project = project.first
+      #fields = {}
+      #fields[:state] = 'Closed'
+      #fields[:notes] = close_reason(project)
+      #project.update(fields)
     end
-    # File.open("DeleteMe.csv", "r") do |f|
-    #   f.each_line do |line|
-    #     puts line
-    #   end
     #   end
   end
 end
-def close_reason(project)
-  return "Folder closed on #{Time.now.utc} due to no activity."
+def close_reason(projectName)
+  return "#{projectName} folder closed on #{Time.now.utc} due to no activity."
 end
 
 # File is closed automatically at end of blockend
 #this will see the method and then run it
 mason = CloseProjects.new
-mason.find_project("Tower 2")
-mason.parse_csv
+#mason.find_project("Tower 2")
+mason.parse_csv("dead_projects.csv")
